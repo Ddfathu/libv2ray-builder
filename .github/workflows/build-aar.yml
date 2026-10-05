@@ -1,6 +1,8 @@
-name: Build LibV2Ray AAR Full Core (WS + TLS Support)
+name: Build LibV2Ray AAR Full Core
 
 on:
+  push:
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
