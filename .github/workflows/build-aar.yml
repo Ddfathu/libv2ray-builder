@@ -16,7 +16,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '>=1.22'
+        go-version: '1.21'
 
     - name: Set up Java JDK
       uses: actions/setup-java@v4
@@ -29,28 +29,28 @@ jobs:
         echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
         echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
 
-    - name: Install Gomobile & Gobind
+    - name: Install Gomobile
       run: |
-        go install golang.org/x/mobile/cmd/gomobile@latest
-        go install golang.org/x/mobile/cmd/gobind@latest
+        go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20231127183840-761c98768f36
+        go install golang.org/x/mobile/cmd/gobind@v0.0.0-20231127183840-761c98768f36
         gomobile init
 
-    - name: Clone Source Code v2rayNG Lib
+    - name: Clone Source Go LibV2Ray
       run: |
-        git clone https://github.com/2dust/v2rayNG.git
+        git clone https://github.com/2dust/v2rayNG.git temp_repo
+        # Ambil folder libv2ray / libXray yang berisi go.mod asli
+        if [ -d "temp_repo/v2rayN/libs" ]; then
+          cp -r temp_repo/v2rayN/libs ./libsource
+        elif [ -d "temp_repo/LibV2ray" ]; then
+          cp -r temp_repo/LibV2ray ./libsource
+        else
+          git clone https://github.com/XTLS/libXray.git libsource
+        fi
 
-    - name: Compile Go Core + Tun2Socks -> libv2ray.aar
+    - name: Compile Go Core -> libv2ray.aar
       run: |
-        TARGET_DIR=$(find v2rayNG -type f -name "go.mod" -exec dirname {} \; | head -n 1)
-        echo "Ketemu folder Go di: $TARGET_DIR"
-        cd "$TARGET_DIR"
-
-        # Tembak dependency gobind & mobile ke go.mod
-        go get golang.org/x/mobile/cmd/gobind
-        go get golang.org/x/mobile
+        cd libsource
         go mod tidy
-
-        # Build AAR
         gomobile bind -v -target=android/arm64,android/arm -androidapi 21 -javapkg=libv2ray -o $GITHUB_WORKSPACE/libv2ray.aar .
 
     - name: Create GitHub Release & Upload AAR
