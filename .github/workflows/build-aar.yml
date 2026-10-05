@@ -24,10 +24,13 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Setup Android NDK Official
-      uses: nsetup/setup-ndk@v1
-      with:
-        ndk-version: r25c
+    - name: Set Valid NDK Path
+      run: |
+        # Cari folder NDK versi asli di Runner Ubuntu
+        NDK_PATH=$(ls -d $ANDROID_SDK_ROOT/ndk/* 2>/dev/null | tail -n 1)
+        echo "Menggunakan NDK dari: $NDK_PATH"
+        echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
+        echo "NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
 
     - name: Install Gomobile
       run: |
