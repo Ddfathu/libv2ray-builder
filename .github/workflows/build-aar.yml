@@ -16,7 +16,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.21'
+        go-version: '1.22'
 
     - name: Set up Java JDK
       uses: actions/setup-java@v4
@@ -24,28 +24,20 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Set Android NDK Environment Variable
+    - name: Set Android NDK Environment
       run: |
         echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
         echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
 
     - name: Install Gomobile
       run: |
-        go install golang.org/x/mobile/cmd/gomobile@v0.0.0-20231127183840-761c98768f36
-        go install golang.org/x/mobile/cmd/gobind@v0.0.0-20231127183840-761c98768f36
+        go install golang.org/x/mobile/cmd/gomobile@latest
+        go install golang.org/x/mobile/cmd/gobind@latest
         gomobile init
 
-    - name: Clone Source Go LibV2Ray
+    - name: Clone libXray Go Source
       run: |
-        git clone https://github.com/2dust/v2rayNG.git temp_repo
-        # Ambil folder libv2ray / libXray yang berisi go.mod asli
-        if [ -d "temp_repo/v2rayN/libs" ]; then
-          cp -r temp_repo/v2rayN/libs ./libsource
-        elif [ -d "temp_repo/LibV2ray" ]; then
-          cp -r temp_repo/LibV2ray ./libsource
-        else
-          git clone https://github.com/XTLS/libXray.git libsource
-        fi
+        git clone https://github.com/XTLS/libXray.git libsource
 
     - name: Compile Go Core -> libv2ray.aar
       run: |
