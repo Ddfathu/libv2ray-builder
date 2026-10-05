@@ -24,10 +24,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Set up Android NDK
-      uses: ndk-actions/setup-ndk@v2
-      with:
-        ndk-version: r25c
+    - name: Set Android NDK Environment Variable
+      run: |
+        echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
+        echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
 
     - name: Install Gomobile
       run: |
