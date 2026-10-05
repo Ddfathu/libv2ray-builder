@@ -13,10 +13,10 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Go
+    - name: Set up Go 1.21 (Compatible with libXray Anet)
       uses: actions/setup-go@v5
       with:
-        go-version: '1.22'
+        go-version: '1.21'
 
     - name: Set up Java JDK
       uses: actions/setup-java@v4
@@ -26,7 +26,6 @@ jobs:
 
     - name: Set Valid NDK Path
       run: |
-        # Cari folder NDK versi asli di Runner Ubuntu
         NDK_PATH=$(ls -d $ANDROID_SDK_ROOT/ndk/* 2>/dev/null | tail -n 1)
         echo "Menggunakan NDK dari: $NDK_PATH"
         echo "ANDROID_NDK_HOME=$NDK_PATH" >> $GITHUB_ENV
