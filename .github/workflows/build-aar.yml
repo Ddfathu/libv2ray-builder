@@ -5,6 +5,9 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-aar:
     runs-on: ubuntu-latest
@@ -42,15 +45,12 @@ jobs:
     - name: Build AAR using libXray Official Build Script
       run: |
         cd libsource
-        # Install gomobile versi terbaru yang kompatibel
         go install golang.org/x/mobile/cmd/gomobile@latest
         go install golang.org/x/mobile/cmd/gobind@latest
         gomobile init
 
-        # Jalankan skrip builder resmi libXray
         python3 build/main.py android --no-snapshot
 
-        # Cari file .aar / .aar.zip hasil build
         find . -name "*.aar" -exec cp {} $GITHUB_WORKSPACE/libv2ray.aar \;
 
     - name: Create GitHub Release & Upload AAR
