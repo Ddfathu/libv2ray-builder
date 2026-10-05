@@ -29,9 +29,10 @@ jobs:
         echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
         echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk-bundle" >> $GITHUB_ENV
 
-    - name: Install Gomobile
+    - name: Install Gomobile & Gobind
       run: |
         go install golang.org/x/mobile/cmd/gomobile@latest
+        go install golang.org/x/mobile/cmd/gobind@latest
         gomobile init
 
     - name: Clone Source Code v2rayNG Lib
@@ -40,10 +41,16 @@ jobs:
 
     - name: Compile Go Core + Tun2Socks -> libv2ray.aar
       run: |
-        # Cari lokasi file go.mod yang berisi libv2ray secara otomatis
         TARGET_DIR=$(find v2rayNG -type f -name "go.mod" -exec dirname {} \; | head -n 1)
         echo "Ketemu folder Go di: $TARGET_DIR"
         cd "$TARGET_DIR"
+
+        # Tembak dependency gobind & mobile ke go.mod
+        go get golang.org/x/mobile/cmd/gobind
+        go get golang.org/x/mobile
+        go mod tidy
+
+        # Build AAR
         gomobile bind -v -target=android/arm64,android/arm -androidapi 21 -javapkg=libv2ray -o $GITHUB_WORKSPACE/libv2ray.aar .
 
     - name: Create GitHub Release & Upload AAR
